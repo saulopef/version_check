@@ -1,5 +1,6 @@
 library version_check;
 
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
@@ -49,7 +50,7 @@ class VersionCheck {
 
   /// check version from iOS/Android/Mac store and
   /// provide update dialog if update is available.
-  Future checkVersion(BuildContext context) async {
+  Future<bool> checkVersion(BuildContext context) async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     packageName ??= packageInfo.packageName;
@@ -77,15 +78,17 @@ class VersionCheck {
       storeVersion = storeVersionAndUrl.storeVersion;
       storeUrl = storeVersionAndUrl.storeUrl;
 
-      if (hasUpdate) {
+      return hasUpdate;
+      /* if (hasUpdate) {
         showUpdateDialog ??= _showUpdateDialog;
         showUpdateDialog!(context, this);
-      }
+      } */
     }
+    return false;
   }
 
   /// check if update is available
-  get hasUpdate {
+  bool get hasUpdate {
     if (packageVersion == null) return false;
     if (storeVersion == null) return false;
     return _shouldUpdate(packageVersion, storeVersion);
@@ -122,10 +125,8 @@ Future<StoreVersionAndUrl?> _getIOSStoreVersionAndUrl(String bundleId) async {
   return null;
 }
 
-Future<StoreVersionAndUrl?> _getAndroidStoreVersionAndUrl(
-    String packageName) async {
-  final uri = Uri.https('play.google.com', '/store/apps/details',
-      {'id': packageName, 'hl': 'en'});
+Future<StoreVersionAndUrl?> _getAndroidStoreVersionAndUrl(String packageName) async {
+  final uri = Uri.https('play.google.com', '/store/apps/details', {'id': packageName, 'hl': 'en'});
 
   final resp = await http.get(uri, headers: {
     'referer': 'http://www.google.com',
@@ -140,8 +141,7 @@ Future<StoreVersionAndUrl?> _getAndroidStoreVersionAndUrl(
     try {
       final elements = doc.querySelectorAll('.hAyfc .BgcNfc');
 
-      final cv =
-          elements.firstWhere((element) => element.text == 'Current Version');
+      final cv = elements.firstWhere((element) => element.text == 'Current Version');
       final version = cv.nextElementSibling!.text;
       return StoreVersionAndUrl(version, url);
     } catch (_) {}
@@ -159,8 +159,7 @@ Future<StoreVersionAndUrl?> _getAndroidStoreVersionAndUrl(
     try {
       final elements = doc.querySelectorAll('div');
 
-      final cv =
-          elements.firstWhere((element) => element.text == 'Current Version');
+      final cv = elements.firstWhere((element) => element.text == 'Current Version');
       final version = cv.nextElementSibling!.text;
       return StoreVersionAndUrl(version, url);
     } catch (_) {}
