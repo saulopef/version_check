@@ -42,10 +42,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   final versionCheck = VersionCheck(
-    packageName: Platform.isIOS
-        ? 'com.tachyonfactory.iconFinder'
-        : 'com.tachyonfactory.icon_finder',
-    packageVersion: '1.0.1',
+    packageName:
+        Platform.isIOS ? 'com.tachyonfactory.iconFinder' : 'com.tachyonfactory.icon_finder',
+    currentVersion: '1.0.1',
     showUpdateDialog: customShowUpdateDialog,
     country: 'kr',
   );
@@ -53,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future checkVersion() async {
     await versionCheck.checkVersion(context);
     setState(() {
-      version = versionCheck.packageVersion;
+      version = versionCheck.currentVersion;
       packageName = versionCheck.packageName;
       storeVersion = versionCheck.storeVersion;
       storeUrl = versionCheck.storeUrl;
@@ -104,9 +103,8 @@ void customShowUpdateDialog(BuildContext context, VersionCheck versionCheck) {
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            Text(
-                'Do you REALLY want to update to ${versionCheck.storeVersion}?'),
-            Text('(current version ${versionCheck.packageVersion})'),
+            Text('Do you REALLY want to update to ${versionCheck.storeVersion}?'),
+            Text('(current version ${versionCheck.currentVersion})'),
           ],
         ),
       ),

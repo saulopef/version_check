@@ -25,7 +25,7 @@ String _country = 'us';
 
 class VersionCheck {
   String? packageName;
-  String? packageVersion;
+  String? currentVersion;
   String? storeVersion;
   String? storeUrl;
   String? country;
@@ -42,7 +42,7 @@ class VersionCheck {
   /// optional country : for ios/mac version check (default: 'us').
   VersionCheck({
     this.packageName,
-    this.packageVersion,
+    this.currentVersion,
     this.getStoreVersionAndUrl,
     this.showUpdateDialog,
     this.country,
@@ -54,7 +54,7 @@ class VersionCheck {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
 
     packageName ??= packageInfo.packageName;
-    packageVersion ??= packageInfo.version;
+    currentVersion ??= packageInfo.version;
     _country = country ?? 'us';
 
     if (getStoreVersionAndUrl == null) {
@@ -78,6 +78,8 @@ class VersionCheck {
       storeVersion = storeVersionAndUrl.storeVersion;
       storeUrl = storeVersionAndUrl.storeUrl;
 
+      print("available version: $storeVersion");
+      print("current version: $currentVersion");
       return hasUpdate;
       /* if (hasUpdate) {
         showUpdateDialog ??= _showUpdateDialog;
@@ -89,9 +91,9 @@ class VersionCheck {
 
   /// check if update is available
   bool get hasUpdate {
-    if (packageVersion == null) return false;
+    if (currentVersion == null) return false;
     if (storeVersion == null) return false;
-    return _shouldUpdate(packageVersion, storeVersion);
+    return _shouldUpdate(currentVersion, storeVersion);
   }
 
   /// launch store for update
@@ -222,7 +224,7 @@ void _showUpdateDialog(BuildContext context, VersionCheck versionCheck) {
         child: ListBody(
           children: <Widget>[
             Text('Do you want to update to ${versionCheck.storeVersion}?'),
-            Text('(current version ${versionCheck.packageVersion})'),
+            Text('(current version ${versionCheck.currentVersion})'),
           ],
         ),
       ),
